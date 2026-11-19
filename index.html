@@ -116,7 +116,7 @@ video::cue{font-size:var(--cue,100%)}
 #brkad .ph0,#hbn .ph0{color:var(--mu);border:1px dashed var(--bd);border-radius:10px;padding:30px 10px;width:100%}
 #brkt{font-size:13px;color:var(--mu);min-height:18px}
 #hbn{display:flex;justify-content:center;overflow:hidden;padding:4px 12px 0;max-width:100%}
-body.plon .sbar,body.plon #hbn{display:none!important}
+body.plon #hbn{display:none!important}
 #exb button{color:var(--ac);font-weight:600;padding:2px 6px}
 </style></head><body>
 
@@ -171,27 +171,8 @@ body.plon .sbar,body.plon #hbn{display:none!important}
 <div class="pw">Powered by SKMAX</div></div></div>
 </div>
 
-<!-- =====================================================================
-     ADSTERRA AD CODES  —  paste each code BETWEEN its <template> tags.
-     Copy the code from Adsterra exactly as it is. Leave empty if not used.
-     ===================================================================== -->
-
-<!-- 1) AD BREAK (every 15 min): Native Banner OR 300x250 Banner code -->
-<template id="ad-break">
-
-</template>
-
-<!-- 2) HOME BANNER (small, 320x50 or 468x60) shown above the movie list -->
-<template id="ad-home">
-
-</template>
-
-<!-- 3) SOCIAL BAR code (hidden automatically while the player is open) -->
-<template id="ad-social">
-
-</template>
-
-<!-- 4) DIRECT LINK: put the link in AD_DIRECT_LINK below (or set it from the Admin Panel) -->
+<!-- Ads are loaded from your website (ad-break.html / ad-home.html on GitHub),
+     so you can change ad codes any time without building a new APK. -->
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -211,6 +192,7 @@ window.dispatchEvent(new Event('fbready'));
 /* ================= SETTINGS ================= */
 const APP_VERSION='1.0';                 // raise this when you publish a new APK (e.g. '1.1')
 let H='http://brix.skin:8080',U='323729bbb',P='216959633823';   // IPTV server (can be overridden from the Admin Panel)
+const AD_BASE='https://positive-player.github.io/';   // where ad-break.html and ad-home.html live
 const AD_DIRECT_LINK='';                 // Adsterra Direct Link URL (Admin Panel value wins if set)
 const AD_EVERY_MIN=15, AD_SECONDS=10;    // ad break every 15 min of app time, shown for 10 s
 /* ============================================ */
@@ -326,23 +308,14 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 })();
 
 /* ---------- ads ---------- */
-function adFrame(box,id,h){
- const t=document.getElementById(id);box.innerHTML='';
- if(!t||!t.innerHTML.trim())return null;
+function adFrame(box,page,h){
+ box.innerHTML='';
  const f=document.createElement('iframe');f.setAttribute('scrolling','no');
  f.style.cssText='border:0;width:100%;height:'+h+'px;display:block;background:transparent';
- f.srcdoc='<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}body{display:flex;justify-content:center;align-items:center;min-height:'+h+'px}</style></head><body>'+t.innerHTML+'</body></html>';
- box.appendChild(f);return f}
-function initAds(){
- const hb=$('#hbn');if(adFrame(hb,'ad-home',64))hb.classList.toggle('hide',st.view!='home');
- const t=document.getElementById('ad-social');
- if(t&&t.innerHTML.trim()){
-  const before=new Set([...document.body.children]);
-  const mo=new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType==1&&!before.has(n)&&n.tagName!='SCRIPT'&&n.tagName!='A')n.classList.add('sbar')})));
-  mo.observe(document.body,{childList:true});setTimeout(()=>mo.disconnect(),30000);
-  const fr=t.content.cloneNode(true);
-  fr.querySelectorAll('script').forEach(o=>{const n=document.createElement('script');[...o.attributes].forEach(a=>n.setAttribute(a.name,a.value));n.text=o.textContent;o.replaceWith(n)});
-  document.body.appendChild(fr)}}
+ f.src=AD_BASE+page+'?t='+Date.now();box.appendChild(f);return f}
+let adReady=false;
+window.addEventListener('message',e=>{if(e.data==='pp-ad-ready')adReady=true;if(e.data==='pp-home-ready')$('#hbn').dataset.ok='1',$('#hbn').classList.toggle('hide',st.view!='home')});
+function initAds(){adFrame($('#hbn'),'ad-home.html',64)}
 let adElapsed=+ls.g('adt',0)||0,brkOn=false,brkResume=false;
 const adCfg=()=>{const a=RC.ads||{};return{on:a.enabled!==false,every:Math.max(1,+a.every||AD_EVERY_MIN),secs:Math.max(3,+a.secs||AD_SECONDS),link:a.directLink||AD_DIRECT_LINK}};
 setInterval(()=>{
@@ -358,13 +331,11 @@ function showBreak(){
  try{if(v.webkitDisplayingFullscreen)v.webkitExitFullscreen()}catch(e){}
  $('#gp').classList.add('hide');
  const box=$('#brkad'),btn=$('#brkc'),tx=$('#brkt');btn.classList.add('hide');
- const f=adFrame(box,'ad-break',300);
- if(!f)box.innerHTML='<div class="ph0">Ad space<br><small>Paste your Adsterra code in the ad-break template</small></div>';
+ adReady=false;adFrame(box,'ad-break.html',300);
  $('#brk').classList.remove('hide');
  let left=c.secs,started=false,waited=0;tx.textContent='Loading ad…';
- const ready=()=>{if(!f)return true;try{const d=f.contentDocument;return !!(d&&d.querySelector('iframe,img,a[href]'))}catch(e){return true}};
  const tk=setInterval(()=>{
-  if(!started){waited+=.5;if(ready()||waited>=6)started=true;else return}
+  if(!started){waited+=.5;if(adReady||waited>=6)started=true;else return}
   left-=.5;
   if(left>0)tx.textContent='You can continue in '+Math.ceil(left)+' s';
   else{clearInterval(tk);tx.textContent='';btn.classList.remove('hide');btn.focus()}},500)}
@@ -430,7 +401,7 @@ const list=()=>{
  return((st.cat=='all'&&st.mix&&st.mix[st.tab])||st.data[st.tab]).filter(i=>st.cat=='all'||(st.tab=='anime'?i.t+':'+i.cat:String(i.cat))==String(st.cat))};
 function render(){
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==st.view));
- {const hb=$('#hbn');hb.classList.toggle('hide',st.view!='home'||!hb.firstChild)}
+ {const hb=$('#hbn');hb.classList.toggle('hide',st.view!='home'||!hb.dataset.ok)}
  const c=$('#content');window.scrollTo(0,0);
  if(st.view=='home'){
   const L=list(),chip=(i,n)=>`<button data-cat="${esc(i)}" class="${st.cat==i?'on':''}">${esc(n)}</button>`;
