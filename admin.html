@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Positive Player · Admin</title>
+<style>
+:root{--bg:#0f0f0f;--sf:#1c1c1c;--s2:#262626;--tx:#f1f1f1;--mu:#9a9a9a;--ac:#cf1b26;--ok:#1faa59;--bd:#333}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,Roboto,sans-serif}
+button{font:inherit;color:inherit;background:var(--s2);border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+button.p{background:var(--ac);color:#fff;font-weight:600}button.g{background:var(--ok);color:#fff}
+button:disabled{opacity:.5}
+input,textarea{font:inherit;color:var(--tx);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 12px;width:100%;outline:0}
+input:focus,textarea:focus{border-color:var(--ac)}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--ac);padding:0}
+textarea{min-height:70px;resize:vertical}
+.hide{display:none!important}.mu{color:var(--mu);font-size:12px}
+.wrap{max-width:900px;margin:0 auto;padding:12px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--bd)}
+.logo{font-weight:900;font-size:18px;letter-spacing:1px;flex:1}.logo b{color:var(--ac)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px;margin:12px 0}
+.card h3{margin:0 0 10px;font-size:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.st{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px}
+.st b{display:block;font-size:26px}.st.on b{color:var(--ok)}
+.f{margin:8px 0}.f label{display:block;color:var(--mu);font-size:12px;margin-bottom:4px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ck{display:flex;align-items:center;gap:8px;margin:8px 0}
+.tabs{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}.tabs button.on{background:var(--tx);color:var(--bg)}
+.u{border-top:1px solid var(--bd);padding:10px 0;display:flex;gap:10px;align-items:flex-start}
+.u .i{flex:1;min-width:0}.u .id{font-family:monospace;font-size:12px;word-break:break-all;cursor:pointer}
+.dot{width:10px;height:10px;border-radius:50%;background:#555;margin-top:5px;flex:none}.dot.on{background:var(--ok)}
+.tag{display:inline-block;background:var(--ac);color:#fff;border-radius:6px;padding:0 6px;font-size:11px;margin-left:4px}
+.u .a{display:flex;flex-direction:column;gap:6px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:20px;z-index:20;font-weight:600}
+#login{max-width:360px;margin:12vh auto;padding:20px}
+.pw{text-align:center;font-size:11px;color:var(--mu);opacity:.6;margin:24px 0}
+</style></head><body>
+
+<div id="login" class="card">
+ <div class="logo" style="text-align:center;font-size:24px;margin-bottom:6px">POSITIVE <b>Player</b></div>
+ <div class="mu" style="text-align:center;margin-bottom:12px">Admin Panel</div>
+ <div class="f"><label>Email</label><input id="em" type="email" autocomplete="username"></div>
+ <div class="f"><label>Password</label><input id="pw" type="password" autocomplete="current-password"></div>
+ <div id="lerr" style="color:var(--ac);min-height:18px"></div>
+ <button class="p" id="lgo" style="width:100%">Log in</button>
+</div>
+
+<div id="app" class="hide">
+<header><div class="logo">POSITIVE <b>Player</b> <span class="mu">Admin</span></div><button id="rf">⟳</button><button id="lo">Log out</button></header>
+<div class="wrap">
+
+<div class="stats">
+ <div class="st on"><span class="mu">🟢 Online now</span><b id="c_on">–</b></div>
+ <div class="st"><span class="mu">Today</span><b id="c_td">–</b></div>
+ <div class="st"><span class="mu">Last 7 days</span><b id="c_wk">–</b></div>
+ <div class="st"><span class="mu">Total users</span><b id="c_all">–</b></div>
+ <div class="st"><span class="mu">Blocked</span><b id="c_bl">–</b></div>
+</div>
+<div class="mu" id="upd_at" style="margin-top:6px"></div>
+
+<div class="card"><h3>🛠 Maintenance</h3>
+ <div class="ck"><input type="checkbox" id="m_on"><label for="m_on">Turn ON maintenance (app shows a message and stops working)</label></div>
+ <div class="f"><label>Message for users</label><textarea id="m_msg" placeholder="We are fixing a problem. Please try again in 1 hour."></textarea></div>
+ <button class="p" data-save="maintenance">Save</button>
+</div>
+
+<div class="card"><h3>📢 Notice to all users</h3>
+ <div class="f"><label>Message (each user sees it once)</label><textarea id="n_txt" placeholder="New movies added! Enjoy 🎬"></textarea></div>
+ <div class="mu" id="n_cur"></div>
+ <div class="row" style="margin-top:8px"><button class="p" id="n_send">Send notice</button><button id="n_off">Remove notice</button></div>
+</div>
+
+<div class="card"><h3>⬆ App update</h3>
+ <div class="f"><label>Latest version (e.g. 1.1). Users with an older version see the update button.</label><input id="u_ver" placeholder="1.1"></div>
+ <div class="f"><label>Update link (your website / APK download page)</label><input id="u_url" placeholder="https://..."></div>
+ <div class="f"><label>Message (optional)</label><input id="u_msg" placeholder="New version with faster loading"></div>
+ <div class="ck"><input type="checkbox" id="u_force"><label for="u_force">Force update (old version stops working until updated)</label></div>
+ <button class="p" data-save="update">Save</button>
+</div>
+
+<div class="card"><h3>💰 Ads</h3>
+ <div class="ck"><input type="checkbox" id="a_on" checked><label for="a_on">Ad breaks ON</label></div>
+ <div class="row"><div class="f" style="flex:1"><label>Show ad every (minutes)</label><input id="a_every" type="number" min="1" placeholder="15"></div>
+ <div class="f" style="flex:1"><label>Ad shown for (seconds)</label><input id="a_secs" type="number" min="3" placeholder="10"></div></div>
+ <div class="f"><label>Adsterra Direct Link (opens when user taps Continue)</label><input id="a_link" placeholder="https://..."></div>
+ <button class="p" data-save="ads">Save</button>
+</div>
+
+<div class="card"><h3>🖥 IPTV server</h3>
+ <div class="mu">Leave empty to use the server built into the app. Changes apply when users reopen the app.</div>
+ <div class="f"><label>Server URL</label><input id="s_host" placeholder="http://server.com:8080"></div>
+ <div class="row"><div class="f" style="flex:1"><label>Username</label><input id="s_user"></div><div class="f" style="flex:1"><label>Password</label><input id="s_pass"></div></div>
+ <button class="p" data-save="server">Save</button>
+</div>
+
+<div class="card"><h3>👥 Users (devices)</h3>
+ <div class="row"><input id="q" placeholder="Search by Device ID" style="flex:1"><button id="qb">Search</button></div>
+ <div class="tabs"><button data-f="all" class="on">Recent</button><button data-f="online">Online</button><button data-f="blocked">Blocked</button></div>
+ <div id="list"></div>
+ <div style="text-align:center;margin-top:10px"><button id="more" class="hide">Load more</button></div>
+</div>
+
+<div class="pw">Powered by SKMAX</div>
+</div></div>
+<div id="toast" class="hide"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, query, where, orderBy, limit, startAfter, getDocs, getCountFromServer, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+const fb=initializeApp({
+ apiKey:"AIzaSyAeVZ1m2NHVlDD888b84u00StuvW-FOgr0",
+ authDomain:"positive-player-e9d34.firebaseapp.com",
+ projectId:"positive-player-e9d34",
+ storageBucket:"positive-player-e9d34.firebasestorage.app",
+ messagingSenderId:"1079059877138",
+ appId:"1:1079059877138:web:3fb6cc6d7f37a3119c77cb"});
+const auth=getAuth(fb),db=getFirestore(fb);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.remove('hide');clearTimeout(e.t);e.t=setTimeout(()=>e.classList.add('hide'),2200)};
+const ONLINE_MIN=6;
+const CFG=doc(db,'config','app'),DEV=collection(db,'devices'),BL=collection(db,'blocked');
+let cfg={},blocked=new Set(),filter='all',lastDoc=null;
+
+/* login */
+async function login(){
+ $('#lerr').textContent='';$('#lgo').disabled=true;
+ try{await signInWithEmailAndPassword(auth,$('#em').value.trim(),$('#pw').value)}
+ catch(e){$('#lerr').textContent='Wrong email or password'}
+ $('#lgo').disabled=false}
+$('#lgo').onclick=login;$('#pw').onkeydown=e=>{if(e.key=='Enter')login()};
+$('#lo').onclick=()=>signOut(auth);
+onAuthStateChanged(auth,u=>{$('#login').classList.toggle('hide',!!u);$('#app').classList.toggle('hide',!u);if(u)loadAll()});
+
+/* data */
+async function loadAll(){await Promise.all([loadCfg(),loadBlocked()]);loadStats();loadList(true)}
+async function loadCfg(){
+ try{const s=await getDoc(CFG);cfg=s.exists()?s.data():{}}catch(e){toast('Could not load settings: '+e.code);return}
+ const m=cfg.maintenance||{},u=cfg.update||{},a=cfg.ads||{},sv=cfg.server||{},n=cfg.notice||{};
+ $('#m_on').checked=!!m.on;$('#m_msg').value=m.msg||'';
+ $('#u_ver').value=u.latest||'';$('#u_url').value=u.url||'';$('#u_msg').value=u.msg||'';$('#u_force').checked=!!u.force;
+ $('#a_on').checked=a.enabled!==false;$('#a_every').value=a.every||'';$('#a_secs').value=a.secs||'';$('#a_link').value=a.directLink||'';
+ $('#s_host').value=sv.host||'';$('#s_user').value=sv.user||'';$('#s_pass').value=sv.pass||'';
+ $('#n_cur').textContent=n.on&&n.text?'Active notice: '+n.text:'No active notice'}
+async function loadBlocked(){try{const s=await getDocs(BL);blocked=new Set(s.docs.map(d=>d.id))}catch(e){}$('#c_bl').textContent=blocked.size}
+async function cnt(q){try{return(await getCountFromServer(q)).data().count}catch(e){return'?'}}
+async function loadStats(){
+ const now=Date.now(),mid=new Date();mid.setHours(0,0,0,0);
+ const since=t=>query(DEV,where('lastSeen','>=',Timestamp.fromMillis(t)));
+ const [on,td,wk,all]=await Promise.all([cnt(since(now-ONLINE_MIN*6e4)),cnt(since(mid.getTime())),cnt(since(now-7*864e5)),cnt(DEV)]);
+ $('#c_on').textContent=on;$('#c_td').textContent=td;$('#c_wk').textContent=wk;$('#c_all').textContent=all;
+ $('#upd_at').textContent='Updated '+new Date().toLocaleTimeString()}
+const ago=ts=>{if(!ts)return'–';const s=(Date.now()-ts.toMillis())/1e3;return s<60?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':Math.floor(s/86400)+' days ago'};
+const isOn=d=>d.lastSeen&&Date.now()-d.lastSeen.toMillis()<ONLINE_MIN*6e4;
+const dev=ua=>/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iPhone':/Windows/i.test(ua)?'Windows':/Mac/i.test(ua)?'Mac':'Other';
+function item(id,d){
+ const b=blocked.has(id);
+ return `<div class="u"><div class="dot ${isOn(d)?'on':''}"></div><div class="i">
+ <div class="id" data-cp="${esc(id)}">${esc(id)}${b?'<span class="tag">BLOCKED</span>':''}</div>
+ <div class="mu">Last seen: ${ago(d.lastSeen)} · First: ${d.firstSeen?d.firstSeen.toDate().toLocaleDateString():'–'} · v${esc(d.version||'?')} · ${dev(d.ua||'')}</div>
+ ${d.watching?`<div class="mu">▶ ${esc(d.watching)}</div>`:''}</div>
+ <div class="a">${b?`<button class="g" data-ub="${esc(id)}">Unblock</button>`:`<button class="p" data-bk="${esc(id)}">Block</button>`}<button data-del="${esc(id)}">Delete</button></div></div>`}
+async function loadList(reset){
+ const L=$('#list');if(reset){L.innerHTML='<div class="mu">Loading…</div>';lastDoc=null}
+ try{
+  if(filter=='blocked'){
+   const ids=[...blocked];const docs=await Promise.all(ids.map(id=>getDoc(doc(DEV,id))));
+   L.innerHTML=ids.length?ids.map((id,i)=>item(id,docs[i].exists()?docs[i].data():{})).join(''):'<div class="mu">No blocked devices</div>';
+   $('#more').classList.add('hide');return}
+  let q=filter=='online'?query(DEV,where('lastSeen','>=',Timestamp.fromMillis(Date.now()-ONLINE_MIN*6e4)),orderBy('lastSeen','desc'),limit(50)):query(DEV,orderBy('lastSeen','desc'),limit(50));
+  if(lastDoc)q=query(q,startAfter(lastDoc));
+  const s=await getDocs(q);
+  const h=s.docs.map(d=>item(d.id,d.data())).join('');
+  if(reset)L.innerHTML=h||'<div class="mu">No users yet</div>';else L.insertAdjacentHTML('beforeend',h);
+  lastDoc=s.docs[s.docs.length-1]||lastDoc;$('#more').classList.toggle('hide',s.docs.length<50)
+ }catch(e){L.innerHTML='<div class="mu">Error: '+esc(e.code||e.message)+'</div>'}}
+$('#more').onclick=()=>loadList(false);
+document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('on',x==b));filter=b.dataset.f;loadList(true)});
+async function search(){
+ const id=$('#q').value.trim();if(!id)return loadList(true);
+ const s=await getDoc(doc(DEV,id));
+ $('#list').innerHTML=s.exists()||blocked.has(id)?item(id,s.exists()?s.data():{}):'<div class="mu">Device not found</div>';$('#more').classList.add('hide')}
+$('#qb').onclick=search;$('#q').onkeydown=e=>{if(e.key=='Enter')search()};
+$('#rf').onclick=()=>{loadAll();toast('Refreshed')};
+setInterval(()=>{if(auth.currentUser&&document.visibilityState=='visible')loadStats()},60e3);
+
+/* actions */
+async function save(part,val,msg){try{await setDoc(CFG,{[part]:val},{merge:true});toast(msg||'Saved ✓');await loadCfg()}catch(e){toast('Error: '+(e.code||e.message))}}
+document.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{
+ const p=b.dataset.save;
+ if(p=='maintenance')save(p,{on:$('#m_on').checked,msg:$('#m_msg').value.trim()});
+ if(p=='update'){const v=$('#u_ver').value.trim();if(v&&!/^\d+(\.\d+)*$/.test(v))return toast('Version must look like 1.1');save(p,{latest:v,url:$('#u_url').value.trim(),msg:$('#u_msg').value.trim(),force:$('#u_force').checked})}
+ if(p=='ads')save(p,{enabled:$('#a_on').checked,every:Math.max(1,+$('#a_every').value||15),secs:Math.max(3,+$('#a_secs').value||10),directLink:$('#a_link').value.trim()});
+ if(p=='server')save(p,{host:$('#s_host').value.trim(),user:$('#s_user').value.trim(),pass:$('#s_pass').value.trim()})});
+$('#n_send').onclick=()=>{const t=$('#n_txt').value.trim();if(!t)return toast('Write a message first');save('notice',{on:true,text:t,id:String(Date.now())},'Notice sent ✓').then(()=>$('#n_txt').value='')};
+$('#n_off').onclick=()=>save('notice',{on:false,text:'',id:''},'Notice removed');
+$('#list').onclick=async e=>{
+ const t=e.target;let id;
+ if(id=t.dataset.cp){try{await navigator.clipboard.writeText(id);toast('Device ID copied')}catch(x){}}
+ else if(id=t.dataset.bk){if(!confirm('Block this device?'))return;await setDoc(doc(BL,id),{at:serverTimestamp()});blocked.add(id);toast('Blocked');loadList(true);$('#c_bl').textContent=blocked.size}
+ else if(id=t.dataset.ub){await deleteDoc(doc(BL,id));blocked.delete(id);toast('Unblocked');loadList(true);$('#c_bl').textContent=blocked.size}
+ else if(id=t.dataset.del){if(!confirm('Delete this device from the list? (It comes back if the user opens the app again.)'))return;await deleteDoc(doc(DEV,id));toast('Deleted');loadList(true);loadStats()}};
+</script></body></html>
