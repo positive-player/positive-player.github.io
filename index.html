@@ -110,13 +110,28 @@ video::cue{font-size:var(--cue,100%)}
 #ldt{font-size:13px;color:#bbb;letter-spacing:.5px;min-height:18px}
 .wa{display:inline-block;margin-top:8px;padding:9px 16px;border-radius:20px;background:#1faa59;color:#fff;text-decoration:none;font-weight:600;font-size:13px}
 #gate{z-index:97}#gmsg{max-width:420px;font-size:15px;white-space:pre-line}
-#brk,#ntc{position:fixed;inset:0;z-index:90;background:#000d;display:flex;align-items:center;justify-content:center;padding:16px}
-#brk .bx,#ntc .bx{background:var(--bg);border:1px solid var(--bd);border-radius:14px;padding:14px;width:min(380px,100%);max-height:92vh;overflow:auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+#brk,#ntc,#oad{position:fixed;inset:0;z-index:90;background:#000d;display:flex;align-items:center;justify-content:center;padding:16px}
+#brk .bx,#ntc .bx,#oad .bx{background:var(--bg);border:1px solid var(--bd);border-radius:14px;padding:14px;width:min(380px,100%);max-height:92vh;overflow:auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+#oadad{width:100%;min-height:250px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #brkad{width:100%;min-height:250px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #brkad .ph0,#hbn .ph0{color:var(--mu);border:1px dashed var(--bd);border-radius:10px;padding:30px 10px;width:100%}
 #brkt{font-size:13px;color:var(--mu);min-height:18px}
 #hbn{display:flex;justify-content:center;overflow:hidden;padding:4px 12px 0;max-width:100%}
 body.plon #hbn{display:none!important}
+.adc{border-radius:8px}.adc .ph{background:var(--sf)}.adc iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.adl{display:block;color:inherit;text-decoration:none}
+.adlx{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:10px;background:linear-gradient(160deg,#2a0508,#111 55%,#3a070c);color:#fff}
+.adlx .adli{font-size:38px}.adlx b{font-size:15px;letter-spacing:.5px}.adlx span{font-size:12px;color:#ccc;border:1px solid #cf1b26;border-radius:14px;padding:3px 10px}
+.adtag{position:absolute;top:6px;left:6px;background:#000b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;pointer-events:none}
+.wa{display:inline-block;margin-top:8px;padding:9px 16px;border-radius:20px;background:#1faa59;color:#fff;text-decoration:none;font-weight:600;font-size:13px}
+#pad{position:absolute;left:0;right:0;top:0;bottom:64px;z-index:5;display:flex;align-items:center;justify-content:center;background:#000a;padding:8px}
+.pbx{background:#111;border:1px solid #333;border-radius:12px;padding:8px;width:min(320px,92%);max-height:100%;display:flex;flex-direction:column;gap:6px;align-items:center}
+.phd{width:100%;display:flex;align-items:center;font-size:11px;color:#aaa}.phd span{flex:1}.phd button{color:#fff;padding:2px 8px}
+#padad{width:100%;height:min(210px,40vh);overflow:hidden}#padp{padding:6px 18px}
+#pl.mini #pad{display:none!important}
+#dad{padding:0 12px 12px}#dadad{width:100%;overflow:hidden}
+.cwr{display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}.cwr .card{flex:none;width:110px}.cwr .nm{font-size:12px}
+.sec{font-weight:700;margin:8px 0 4px}
 #exb button{color:var(--ac);font-weight:600;padding:2px 6px}
 </style></head><body>
 
@@ -126,7 +141,9 @@ body.plon #hbn{display:none!important}
 
 <div id="gate" class="hide"><div class="stars" data-stars></div><div class="lg" data-logo></div><div id="gmsg"></div><div id="gbtn"></div><div class="pw">Powered by SKMAX</div></div>
 
-<div id="brk" class="hide"><div class="bx"><div class="mu">Advertisement</div><div id="brkad"></div><div id="brkt"></div><button id="brkc" class="btn hide">Continue ▶</button></div></div>
+<div id="brk" class="hide"><div class="bx"><div class="mu">Advertisement</div><div id="brkad"></div><div id="brkt"></div><a id="brkc" class="btn hide" href="#" rel="noopener" style="text-decoration:none;display:inline-block">Continue ▶</a></div></div>
+
+<div id="oad" class="hide"><div class="bx"><div style="width:100%;display:flex;align-items:center;gap:8px;min-height:34px"><div class="mu" style="flex:1;text-align:left">Advertisement</div><div id="oadt" class="mu"></div><button id="oadx" class="hide" aria-label="Close" style="font-size:16px;padding:4px 12px;background:var(--sf);border-radius:16px">✕</button></div><div id="oadad"></div></div></div>
 
 <div id="ntc" class="hide"><div class="bx"><h3 style="margin:0 0 8px">📢 Notice</h3><div id="ntct" style="white-space:pre-line"></div><button id="ntcx" class="btn" style="margin-top:14px">OK</button></div></div>
 
@@ -148,9 +165,9 @@ body.plon #hbn{display:none!important}
 <div><input id="seek" type="range" min="0" max="1" step="any" value="0">
 <div class="crow"><button id="mute">🔊</button><input id="vol" type="range" min="0" max="1" step="0.05" value="1"><span id="tm" class="mu" style="color:#ddd;flex:1;padding-left:6px">0:00 / 0:00</span>
 <button id="nx" class="hide">⏭</button><button id="cc" class="hide">CC</button><button id="gear">⚙</button><button id="fs">⛶</button></div></div>
-<div id="gp" class="hide"></div></div></div>
+<div id="gp" class="hide"></div></div><div id="pad" class="hide"><div class="pbx"><div class="phd"><span>Advertisement</span><button id="padx" aria-label="Close">✕</button></div><div id="padad"></div><button id="padp" class="btn">▶ Resume</button></div></div></div>
 <div id="mbar"><div class="t" id="mt"></div><button id="mpp">⏸</button><button id="mx">✕</button></div>
-<div id="info"></div></div>
+<div id="info"></div><div id="dad" class="hide"><div class="mu" style="margin-bottom:6px">Sponsored</div><div id="dadad"></div></div></div>
 <div id="recs"></div></div>
 
 <div id="set" class="hide"><div class="sheet">
@@ -166,7 +183,7 @@ body.plon #hbn{display:none!important}
 <div class="mu" style="padding:6px 0">🔞 Adult content is blocked</div>
 <h4>Data</h4>
 <button data-clr="hist">Clear search history</button><button data-clr="rec">Clear Recent</button><button data-clr="fav">Clear Favorites</button><button data-clr="dl">Clear Downloads</button>
-<h4>About</h4><div>Positive Player · version <span id="ver"></span></div><div id="vst" class="mu" style="padding:4px 0"></div><button id="upd" class="hide" style="color:var(--ac)">⬆ Update now</button><div class="mu" style="padding:4px 0">Device ID: <span id="did"></span></div>
+<h4>About</h4><div>Positive Player · version <span id="ver"></span></div><div id="vst" class="mu" style="padding:4px 0"></div><button id="upd" class="hide" style="color:var(--ac)">⬆ Update now</button><a id="shr" class="wa" href="#" target="_blank" rel="noopener">📤 Share Positive Player with friends</a><div class="mu" style="padding:4px 0">Device ID: <span id="did"></span></div>
 <button id="sx" class="btn" style="text-align:center;margin-top:16px">Close</button>
 <div class="pw">Powered by SKMAX</div></div></div>
 </div>
@@ -190,10 +207,12 @@ window.dispatchEvent(new Event('fbready'));
 
 <script>
 /* ================= SETTINGS ================= */
-const APP_VERSION='1.0';                 // raise this when you publish a new APK (e.g. '1.1')
-let H='http://brix.skin:8080',U='323729bbb',P='216959633823';   // IPTV server (can be overridden from the Admin Panel)
+const APP_VERSION='1.2';                 // raise this when you publish a new APK (e.g. '1.1')
+let H='http://brix.skin:8080',U='323729bbb',P='216959633823';   // built-in IPTV account (used when no accounts are set in the Admin Panel)
+const BUILTIN={h:H,u:U,p:P};
 const AD_BASE='https://positive-player.github.io/';   // where ad-break.html and ad-home.html live
-const AD_DIRECT_LINK='';                 // Adsterra Direct Link URL (Admin Panel value wins if set)
+const AD_DIRECT_LINK='';
+const SHARE_URL='https://positive-player.github.io/download.html';   // link users share with friends                 // Adsterra Direct Link URL (Admin Panel value wins if set)
 const AD_EVERY_MIN=15, AD_SECONDS=10;    // ad break every 15 min of app time, shown for 10 s
 /* ============================================ */
 const $=s=>document.querySelector(s);
@@ -259,7 +278,7 @@ function gate(){
  else if(up.force&&up.latest&&newer(up.latest,APP_VERSION)){msg='⬆ '+(up.msg||'A new version is available. Please update to continue.')+'\nYour version: '+APP_VERSION+' · New version: '+up.latest;if(up.url)btn='<button class="btn" onclick="openUpdate()">Update now</button>'}
  if(msg){$('#gmsg').textContent=msg;$('#gbtn').innerHTML=btn;g.classList.remove('hide');if(!v.paused)v.pause();return true}
  g.classList.add('hide');
- if(booted&&!entered){entered=true;enter().finally(()=>{applyRC();initAds()})}
+ if(booted&&!entered){entered=true;enter().finally(()=>{applyRC();initAds();showOpenAd()})}
  return false}
 
 /* ---------- remote config from the Admin Panel ---------- */
@@ -290,6 +309,25 @@ async function heartbeat(force){
 setInterval(()=>heartbeat(true),5*60e3);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')heartbeat(false)});
 
+/* ---------- IPTV accounts: share users across accounts + automatic backup ---------- */
+function serverPool(){
+ const L=[],seen=new Set();
+ const add=(h,u,p)=>{if(!h||!u||!p)return;const x={h:String(h).trim().replace(/\/+$/,''),u:String(u).trim(),p:String(p).trim()};const k=x.h+'|'+x.u;if(!seen.has(k)){seen.add(k);L.push(x)}};
+ (Array.isArray(RC.servers)?RC.servers:[]).forEach(s=>{if(s&&s.on!==false)add(s.host,s.user,s.pass)});
+ if(!L.length&&RC.server)add(RC.server.host,RC.server.user,RC.server.pass);
+ if(!L.length)add(BUILTIN.h,BUILTIN.u,BUILTIN.p);
+ return L}
+const useServer=x=>{H=x.h;U=x.u;P=x.p};
+function probe(x){return new Promise(ok=>{try{const r=new XMLHttpRequest();r.open('GET',x.h+'/player_api.php?username='+encodeURIComponent(x.u)+'&password='+encodeURIComponent(x.p));r.timeout=15000;
+ r.onload=()=>{try{const j=JSON.parse(r.responseText);ok(!!(j&&j.user_info&&String(j.user_info.auth)==='1'))}catch(e){ok(false)}};
+ r.onerror=r.ontimeout=()=>ok(false);r.send()}catch(e){ok(false)}})}
+async function pickServer(){
+ const L=serverPool();if(L.length<2){useServer(L[0]);return}
+ let h=0;for(const c of devId())h=(h*31+c.charCodeAt(0))|0;
+ const st0=Math.abs(h)%L.length,order=L.slice(st0).concat(L.slice(0,st0));
+ for(let i=0;i<order.length;i++){ldStep(i?'Trying backup server '+(i+1)+'…':'Connecting to server…',12+i*4);if(await probe(order[i])){useServer(order[i]);return}}
+ useServer(order[0])}
+
 /* ---------- start: splash -> auto login -> app ---------- */
 (async()=>{
  const t0=Date.now();
@@ -298,7 +336,6 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
   let first;const got=new Promise(r=>first=r);
   FB.onSnapshot(FB.doc(FB.db,'config','app'),sn=>{
    RC=sn.exists()?(sn.data()||{}):{};
-   const sv=RC.server||{};if(!entered&&sv.host&&sv.user&&sv.pass){H=String(sv.host).trim().replace(/\/+$/,'');U=String(sv.user).trim();P=String(sv.pass).trim()}
    first();applyRC()},()=>first());
   await Promise.race([got,sleep(5000)]);
   await Promise.race([heartbeat(true),sleep(3000)]);
@@ -316,10 +353,36 @@ function adFrame(box,page,h){
 let adReady=false;
 window.addEventListener('message',e=>{if(e.data==='pp-ad-ready')adReady=true;if(e.data==='pp-home-ready')$('#hbn').dataset.ok='1',$('#hbn').classList.toggle('hide',st.view!='home')});
 function initAds(){adFrame($('#hbn'),'ad-home.html',64)}
+/* opening ad: shown when the app opens (not more often than every openGap minutes) */
+let oadReady=false;
+window.addEventListener('message',e=>{if(e.data==='pp-open-ready')oadReady=true});
+function showOpenAd(){
+ const c=adCfg();if(!c.on||!c.openOn||!$('#gate').classList.contains('hide'))return;
+ if(Date.now()-(+ls.g('oadt',0)||0)<c.openGap*6e4)return;ls.s('oadt',Date.now());
+ oadReady=false;adFrame($('#oadad'),'ad-open.html',300);
+ const x=$('#oadx'),t=$('#oadt');x.classList.add('hide');t.textContent='Loading…';$('#oad').classList.remove('hide');
+ let left=c.openSecs,started=false,waited=0;
+ const tk=setInterval(()=>{
+  if(!started){waited+=.5;if(oadReady||waited>=5)started=true;else return}
+  left-=.5;if(left>0)t.textContent='Skip in '+Math.ceil(left);else{clearInterval(tk);t.textContent='';x.classList.remove('hide');x.focus()}},500)}
+$('#oadx').onclick=()=>{$('#oad').classList.add('hide');$('#oadad').innerHTML='';adElapsed=0;ls.s('adt',0)};
+/* thumbnail-sized ads inside the movie grid */
+let gridSeq=0;
+const bannerCard=()=>`<div class="adc"><div class="ph"><iframe loading="lazy" scrolling="no" src="${AD_BASE}ad-grid.html?t=${Date.now()}_${gridSeq++}"></iframe><span class="adtag">Ad</span></div><div class="nm mu">Sponsored</div></div>`;
+const linkCard=u=>`<a class="adc adl" href="${esc(u)}" target="_blank" rel="noopener"><div class="ph"><div class="adlx"><div class="adli">🎁</div><b>Sponsored</b><span>Tap to explore</span></div><span class="adtag">Ad</span></div><div class="nm mu">Sponsored</div></a>`;
+let adSlot=0;
+function adCard(){const c=adCfg(),k=adSlot++;
+ if(c.gridLink&&(c.gridMode==='link'||(c.gridMode==='mix'&&k%2===1)))return linkCard(c.gridLink);
+ return bannerCard()}
+function cardsWithAds(items,start){
+ const c=adCfg(),n=c.gridEvery,on=c.on&&c.gridOn;
+ return items.map((it,k)=>{const idx=start+k+1;return card(it)+(on&&idx%n===0?adCard():'')}).join('')}
 let adElapsed=+ls.g('adt',0)||0,brkOn=false,brkResume=false;
-const adCfg=()=>{const a=RC.ads||{};return{on:a.enabled!==false,every:Math.max(1,+a.every||AD_EVERY_MIN),secs:Math.max(3,+a.secs||AD_SECONDS),link:a.directLink||AD_DIRECT_LINK}};
+const adCfg=()=>{const a=RC.ads||{};return{on:a.enabled!==false,every:Math.max(1,+a.every||AD_EVERY_MIN),secs:Math.max(3,+a.secs||AD_SECONDS),link:a.directLink||AD_DIRECT_LINK,
+ openOn:a.openOn!==false,openSecs:Math.max(2,+a.openSecs||5),openGap:Math.max(0,a.openGap==null||a.openGap===''?10:+a.openGap),
+ gridOn:a.gridOn!==false,gridEvery:Math.max(4,+a.gridEvery||9),gridLink:String(a.gridLink||'').trim(),gridMode:a.gridMode||'mix',pauseOn:a.pauseOn!==false,detailOn:a.detailOn!==false}};
 setInterval(()=>{
- if(!entered||brkOn||document.visibilityState!=='visible'||!$('#gate').classList.contains('hide')||!$('#ld').classList.contains('hide'))return;
+ if(!entered||brkOn||document.visibilityState!=='visible'||!$('#gate').classList.contains('hide')||!$('#ld').classList.contains('hide')||!$('#oad').classList.contains('hide'))return;
  const c=adCfg();if(!c.on)return;
  adElapsed++;if(adElapsed%10==0)ls.s('adt',adElapsed);
  if(adElapsed>=c.every*60)showBreak()},1000);
@@ -338,9 +401,9 @@ function showBreak(){
   if(!started){waited+=.5;if(adReady||waited>=6)started=true;else return}
   left-=.5;
   if(left>0)tx.textContent='You can continue in '+Math.ceil(left)+' s';
-  else{clearInterval(tk);tx.textContent='';btn.classList.remove('hide');btn.focus()}},500)}
-$('#brkc').onclick=()=>{
- const c=adCfg();if(c.link){try{window.open(c.link,'_blank')}catch(e){}}
+  else{clearInterval(tk);tx.textContent='';if(c.link){btn.href=c.link;btn.target='_blank'}else{btn.href='#';btn.removeAttribute('target')}btn.classList.remove('hide');btn.focus()}},500)}
+$('#brkc').onclick=e=>{
+ if(!adCfg().link)e.preventDefault();
  $('#brk').classList.add('hide');$('#brkad').innerHTML='';brkOn=false;
  if(brkResume)v.play().catch(()=>{})};
 
@@ -361,6 +424,7 @@ async function enter(){
  $('#app').classList.remove('hide');
  $('#content').innerHTML='';
  try{
+  ldStep('Connecting to server…',12);await pickServer();
   const ui=await api('');if(!ui||!ui.user_info||String(ui.user_info.auth)!=='1')throw new Error('auth');
   ldStep('Loading categories…',28);
   const [mc,sc]=await Promise.all([api('get_vod_categories'),api('get_series_categories')]);
@@ -407,9 +471,11 @@ function render(){
   const L=list(),chip=(i,n)=>`<button data-cat="${esc(i)}" class="${st.cat==i?'on':''}">${esc(n)}</button>`;
   const head=st.q?`<div class="mu" style="padding:8px 0">${L.length} result${L.length==1?'':'s'} for “${esc(st.q)}”</div>`:`<div class="tabs">${['movie','series','anime'].map(t=>`<button data-tab="${t}" class="${st.tab==t?'on':''}">${({movie:'Movies',series:'Series',anime:'Anime'})[t]}</button>`).join('')}</div>
   <div class="chips">${chip('all','All')}${st.cats[st.tab].map(x=>chip(x.category_id,x.category_name)).join('')}</div>`;
-  c.innerHTML=`${head}
-  ${L.length?`<div class="grid" id="g">${L.slice(0,st.n).map(i=>card(i)).join('')}</div>${L.length>st.n?'<div style="text-align:center;margin-top:16px"><button class="btn" id="lm">Load more</button></div>':''}`:`<div class="empty">${st.tab=='anime'&&!st.q&&!st.data.anime.length?'No anime found. Categories with “Anime” or “Cartoon” in the name are detected automatically.':'No results found. Try another search or category.'}</div>`}`;
-  const lm=$('#lm');if(lm)lm.onclick=()=>{$('#g').insertAdjacentHTML('beforeend',L.slice(st.n,st.n+48).map(i=>card(i)).join(''));st.n+=48;if(st.n>=L.length)lm.remove()}
+  const R=(!st.q&&st.cat=='all')?ls.g('rec',[]).filter(r=>M[r.k]&&r.d&&r.t/r.d<0.95).slice(0,10):[];
+  const cw=R.length?`<div class="sec">▶ Continue watching</div><div class="cwr">${R.map(r=>card(M[r.k],`<i class="pg" style="width:${Math.min(100,r.t/r.d*100)}%"></i>`)).join('')}</div>`:'';
+  c.innerHTML=`${cw}${head}
+  ${L.length?`<div class="grid" id="g">${(adSlot=0,cardsWithAds(L.slice(0,st.n),0))}</div>${L.length>st.n?'<div style="text-align:center;margin-top:16px"><button class="btn" id="lm">Load more</button></div>':''}`:`<div class="empty">${st.tab=='anime'&&!st.q&&!st.data.anime.length?'No anime found. Categories with “Anime” or “Cartoon” in the name are detected automatically.':'No results found. Try another search or category.'}</div>`}`;
+  const lm=$('#lm');if(lm)lm.onclick=()=>{$('#g').insertAdjacentHTML('beforeend',cardsWithAds(L.slice(st.n,st.n+48),st.n));st.n+=48;if(st.n>=L.length)lm.remove()}
  }else if(st.view=='recent'){
   const R=ls.g('rec',[]).filter(r=>M[r.k]);
   c.innerHTML=R.length?`<div class="grid">${R.map(r=>card(M[r.k],`<i class="pg" style="width:${r.d?Math.min(100,r.t/r.d*100):0}%"></i>`)).join('')}</div>`:'<div class="empty">Nothing here yet. Start watching and it will show up here.</div>'
@@ -452,6 +518,23 @@ document.addEventListener('click',e=>{
  if(d('#sx')||t.id=='set')return $('#set').classList.add('hide');
 });
 
+/* pause ad: small ad when the user pauses the video */
+let padT=0;
+function showPauseAd(){
+ const c=adCfg();if(!c.on||!c.pauseOn||brkOn||!full()||v.ended||v.currentTime<3||!$('#brk').classList.contains('hide'))return;
+ adFrame($('#padad'),'ad-pause.html',210);$('#pad').classList.remove('hide')}
+function hidePauseAd(){clearTimeout(padT);if(!$('#pad').classList.contains('hide')){$('#pad').classList.add('hide');$('#padad').innerHTML=''}}
+v.addEventListener('pause',()=>{clearTimeout(padT);padT=setTimeout(()=>{if(v.paused)showPauseAd()},700)});
+v.addEventListener('play',hidePauseAd);
+$('#pad').addEventListener('click',e=>e.stopPropagation());
+$('#padx').onclick=hidePauseAd;$('#padp').onclick=()=>{hidePauseAd();v.play().catch(()=>{})};
+/* ad under the movie description (loaded once per title) */
+function showDetailAd(){const c=adCfg(),d=$('#dad');if(!c.on||!c.detailOn){d.classList.add('hide');$('#dadad').innerHTML='';return}
+ adFrame($('#dadad'),'ad-detail.html',300);d.classList.remove('hide')}
+/* share */
+function setShare(){const t='🎬 Watch movies, series & anime FREE on Positive Player! Download: '+SHARE_URL;$('#shr').href='https://wa.me/?text='+encodeURIComponent(t)}
+setShare();
+
 /* player */
 const srcUrl=(it,ep)=>it.t=='movie'?`${H}/movie/${U}/${P}/${it.id}.${it.ext}`:`${H}/series/${U}/${P}/${ep.id}.${ep.ext}`;
 function play(url,t){
@@ -468,7 +551,7 @@ async function open(k){
  const it=M[k];if(!it)return;if(cur)saveRec();
  const rec=ls.g('rec',[]).find(r=>r.k==k);
  cur={it,eps:[],ep:null,det:{}};
- pl.classList.remove('hide','mini');pl.scrollTop=0;updExb();
+ pl.classList.remove('hide','mini');pl.scrollTop=0;updExb();hidePauseAd();showDetailAd();
  $('#ct').textContent=$('#mt').textContent=it.name;renderInfo();$('#recs').innerHTML='';clearTimeout(window._rt);window._rt=setTimeout(()=>{if(cur&&cur.it==it)renderRecs()},3000);$('#msg').textContent='Loading…';$('#ctl').classList.add('off');
  try{
   if(it.t=='movie'){
@@ -491,7 +574,7 @@ function renderInfo(){
  const it=cur.it,d=cur.det,fav=ls.g('fav',[]).includes(it.t+':'+it.id);
  const rows=[['Release',d.releasedate||d.releaseDate],['Rating',d.rating],['Genre',d.genre],['Cast',d.cast||d.actors],['Director',d.director],['Duration',d.duration||d.episode_run_time]].filter(r=>r[1]&&r[1]!='0');
  $('#info').innerHTML=`<h2>${esc(it.name)}</h2><div class="mu">${it.t=='movie'?'Movie':'Series'}${d.releasedate||d.releaseDate?' · '+esc((d.releasedate||d.releaseDate).slice(0,4)):''}${d.genre?' · '+esc(d.genre):''}</div>
- <div class="acts"><button id="fav">${fav?'♥ Favorited':'♡ Favorite'}</button><button id="dl">⬇ Download</button></div>
+ <div class="acts"><button id="fav">${fav?'♥ Favorited':'♡ Favorite'}</button><button id="dl">⬇ Download</button><a class="acts-a" href="${esc($('#shr').href)}" target="_blank" rel="noopener" style="background:var(--sf);border-radius:18px;padding:8px 16px;color:inherit;text-decoration:none">📤 Share</a></div>
  <div class="dsc clamp" id="dsc"><div class="pl">${esc(d.plot||d.description||'No description available.')}</div><div class="ex">${rows.map(r=>esc(r[0])+': '+esc(r[1])).join('\n')}</div></div>
  <button id="more">...more</button>${it.t=='series'?'<div id="eps"></div>':''}`;
  $('#hb').textContent=fav?'♥':'♡';renderEps()}
@@ -523,9 +606,9 @@ function saveRec(){
  r.unshift({k,ep:cur.ep?.id||null,t:v.ended?0:v.currentTime,d:v.duration,ts:Date.now()});ls.s('rec',r.slice(0,30))}
 
 /* mini player + close */
-const mini=()=>{pl.classList.add('mini');$('#gp').classList.add('hide');updExb()};
+const mini=()=>{hidePauseAd();pl.classList.add('mini');$('#gp').classList.add('hide');updExb()};
 const expand=()=>{pl.classList.remove('mini');pl.scrollTop=0;ctlShow();updExb()};
-function closePl(){saveRec();v.pause();if(hls){hls.destroy();hls=null}v.removeAttribute('src');v.load();pl.classList.add('hide');pl.classList.remove('mini');cur=null;updExb();if(document.fullscreenElement)document.exitFullscreen()}
+function closePl(){hidePauseAd();$('#dadad').innerHTML='';$('#dad').classList.add('hide');saveRec();v.pause();if(hls){hls.destroy();hls=null}v.removeAttribute('src');v.load();pl.classList.add('hide');pl.classList.remove('mini');cur=null;updExb();if(document.fullscreenElement)document.exitFullscreen()}
 $('#bk').onclick=e=>{e.stopPropagation();mini()};$('#mx').onclick=e=>{e.stopPropagation();closePl()};
 $('#mpp').onclick=e=>{e.stopPropagation();v.paused?v.play():v.pause()};
 $('#mt').onclick=expand;
@@ -612,7 +695,7 @@ function spatial(dir){
 document.addEventListener('keydown',e=>{
  const k=e.key,a=document.activeElement,tag=a.tagName,typing=tag=='INPUT'&&a.type!='range'&&a.type!='checkbox';
  if(['Escape','GoBack','BrowserBack'].includes(k)||[4,10009,461].includes(e.keyCode)||(k=='Backspace'&&!typing)){e.preventDefault();return back()}
- if(!$('#gate').classList.contains('hide')||!$('#splash').classList.contains('hide')||!$('#brk').classList.contains('hide'))return;
+ if(!$('#gate').classList.contains('hide')||!$('#splash').classList.contains('hide')||!$('#brk').classList.contains('hide')||!$('#oad').classList.contains('hide'))return;
  const arrow=k.startsWith('Arrow');
  if(full()&&$('#ctl').classList.contains('off')&&$('#set').classList.contains('hide')&&(arrow||k==' '||k=='Enter')){
   e.preventDefault();if(k==' '||k=='Enter')tog();else if(k=='ArrowLeft')skip(-10);else if(k=='ArrowRight')skip(10);else $('#seek').focus();

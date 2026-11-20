@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Positive Player · Download</title>
+<meta name="description" content="Download the latest version of Positive Player for Android.">
+<style>
+:root{--bg:#000;--sf:#161616;--tx:#f1f1f1;--mu:#9a9a9a;--ac:#cf1b26;--bd:#2c2c2c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px;position:relative;overflow-x:hidden}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars i{position:absolute;font-style:normal;line-height:1;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.12;transform:scale(.8)}50%{opacity:.85;transform:scale(1.15)}}
+main{position:relative;z-index:1;width:min(440px,100%);text-align:center}
+.lg{width:min(70vw,300px);margin:0 auto}.lg svg{width:100%;height:auto;display:block;overflow:visible}
+.ey{transform-box:fill-box;transform-origin:center;animation:pu 2.4s ease-in-out infinite}
+@keyframes pu{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.sm{stroke-dasharray:260;stroke-dashoffset:260;animation:dr 1.2s .3s ease-out forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.ver{display:inline-block;margin:10px 0 4px;padding:4px 14px;border:1px solid var(--bd);border-radius:20px;color:var(--mu);font-size:13px}
+.ver b{color:var(--tx)}
+#msg{color:var(--mu);min-height:20px;margin:6px 0 0;white-space:pre-line}
+.dl{display:block;margin:22px 0 8px;padding:16px;border-radius:14px;background:var(--ac);color:#fff;text-decoration:none;font-weight:800;font-size:18px;letter-spacing:.5px;box-shadow:0 8px 30px #cf1b2655}
+.dl:active{transform:scale(.98)}
+.mu{color:var(--mu);font-size:12px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-top:22px;text-align:left}
+.card h3{margin:0 0 10px;font-size:16px}
+.card ol{margin:0;padding-left:20px}.card li{margin:6px 0}
+.ft{grid-template-columns:1fr 1fr;display:grid;gap:10px;margin-top:22px}
+.ft div{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px;font-size:13px}
+.ft b{display:block;font-size:20px;margin-bottom:2px}
+.pw{margin:28px 0 8px;font-size:11px;color:var(--mu);opacity:.6}
+</style></head><body>
+<div class="stars" id="stars"></div>
+<main>
+ <div class="lg"><svg viewBox="0 0 414 270" xmlns="http://www.w3.org/2000/svg"><circle cx="207" cy="64" r="54" fill="none" stroke="#fff" stroke-width="9"/><circle cx="207" cy="64" r="40" fill="#111"/><polygon class="ey" points="192,38 192,90 236,64" fill="#c8141e"/><text x="207" y="168" text-anchor="middle" font-family="system-ui,Roboto,Arial,sans-serif" font-weight="900" font-size="50" letter-spacing="4" fill="#fff">POSITIVE</text><text x="207" y="212" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-weight="900" font-size="40" fill="#c8141e">PLAYER</text><path class="sm" d="M126 222Q207 272 288 222" fill="none" stroke="#c8141e" stroke-width="9" stroke-linecap="round"/></svg></div>
+
+ <div class="ver">Latest version <b id="v">1.2</b></div>
+ <div id="msg"></div>
+
+ <!-- The APK file in your GitHub repository. Keep the same name when you upload a new version. -->
+ <a class="dl" id="dl" href="positive-player.apk" download>⬇ Download APK</a>
+ <div class="mu">For Android · Free</div>
+
+ <div class="ft">
+  <div><b>🎬</b>Movies &amp; series</div>
+  <div><b>🌸</b>Anime</div>
+  <div><b>⏯</b>Continue watching</div>
+  <div><b>⭐</b>Favorites</div>
+ </div>
+
+ <div class="card"><h3>How to install</h3><ol>
+  <li>Tap <b>Download APK</b> and wait until it finishes.</li>
+  <li>Open the downloaded file from your notifications or the <b>Downloads</b> folder.</li>
+  <li>If Android asks, allow <b>Install unknown apps</b> for your browser.</li>
+  <li>Tap <b>Install</b> (or <b>Update</b>), then open Positive Player.</li>
+ </ol>
+ <div class="mu" style="margin-top:10px">Updating keeps your favorites and watch history.</div></div>
+
+ <div class="pw">Powered by SKMAX</div>
+</main>
+
+<script>
+(function(){const c=['#cf1b26','#fff','#777','#cf1b26','#999'];let h='';
+ for(let k=0;k<26;k++)h+=`<i style="left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*100).toFixed(1)}%;font-size:${8+(Math.random()*16|0)}px;color:${c[k%5]};animation-delay:${(Math.random()*3).toFixed(2)}s">+</i>`;
+ document.getElementById('stars').innerHTML=h})();
+</script>
+<script type="module">
+// Shows the version and message you set in the Admin Panel (App update section)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+try{
+ const app=initializeApp({apiKey:"AIzaSyAeVZ1m2NHVlDD888b84u00StuvW-FOgr0",authDomain:"positive-player-e9d34.firebaseapp.com",projectId:"positive-player-e9d34",storageBucket:"positive-player-e9d34.firebasestorage.app",messagingSenderId:"1079059877138",appId:"1:1079059877138:web:3fb6cc6d7f37a3119c77cb"});
+ const s=await getDoc(doc(getFirestore(app),'config','app'));
+ const u=(s.exists()&&s.data().update)||{};
+ if(u.latest)document.getElementById('v').textContent=u.latest;
+ if(u.msg)document.getElementById('msg').textContent=u.msg;
+}catch(e){}
+</script>
+</body></html>

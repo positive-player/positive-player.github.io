@@ -33,6 +33,7 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-i
 .u .a{display:flex;flex-direction:column;gap:6px}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:20px;z-index:20;font-weight:600}
 #login{max-width:360px;margin:12vh auto;padding:20px}
+.sv{border:1px solid var(--bd);border-radius:10px;padding:10px;margin-top:10px}.sv .hd{display:flex;align-items:center;gap:8px;margin-bottom:4px}.sv .hd b{flex:1}
 .pw{text-align:center;font-size:11px;color:var(--mu);opacity:.6;margin:24px 0}
 </style></head><body>
 
@@ -82,15 +83,26 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-i
  <div class="ck"><input type="checkbox" id="a_on" checked><label for="a_on">Ad breaks ON</label></div>
  <div class="row"><div class="f" style="flex:1"><label>Show ad every (minutes)</label><input id="a_every" type="number" min="1" placeholder="15"></div>
  <div class="f" style="flex:1"><label>Ad shown for (seconds)</label><input id="a_secs" type="number" min="3" placeholder="10"></div></div>
- <div class="f"><label>Adsterra Direct Link (opens when user taps Continue)</label><input id="a_link" placeholder="https://..."></div>
+ <div class="f"><label>Adsterra Direct Link (opens when user taps Continue — leave empty for none)</label><input id="a_link" placeholder="https://..."></div>
+ <h3 style="margin:16px 0 4px;font-size:14px">🚪 Opening ad (when the app opens)</h3>
+ <div class="ck"><input type="checkbox" id="a_oon" checked><label for="a_oon">Opening ad ON</label></div>
+ <div class="row"><div class="f" style="flex:1"><label>Close button after (seconds)</label><input id="a_osec" type="number" min="2" placeholder="5"></div>
+ <div class="f" style="flex:1"><label>Show again only after (minutes)</label><input id="a_ogap" type="number" min="0" placeholder="10"></div></div>
+ <h3 style="margin:16px 0 4px;font-size:14px">⏸ Other ads</h3>
+ <div class="ck"><input type="checkbox" id="a_pon" checked><label for="a_pon">Pause ad (small ad when a user pauses a video)</label></div>
+ <div class="ck"><input type="checkbox" id="a_don" checked><label for="a_don">Ad under the movie description</label></div>
+ <h3 style="margin:16px 0 4px;font-size:14px">🖼 Ads between thumbnails</h3>
+ <div class="ck"><input type="checkbox" id="a_gon" checked><label for="a_gon">Thumbnail ads ON</label></div>
+ <div class="f"><label>One ad after every (thumbnails)</label><input id="a_gev" type="number" min="4" placeholder="9"></div>
+ <div class="f"><label>Smartlink / Direct Link for thumbnail ads (opens only when the user taps it — leave empty for banners only)</label><input id="a_glink" placeholder="https://..."></div>
+ <div class="f"><label>Thumbnail ad type</label><select id="a_gmode" style="width:100%;font:inherit;color:var(--tx);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 12px"><option value="mix">Mix: banner, then Smartlink, then banner…</option><option value="banner">Banners only</option><option value="link">Smartlink only</option></select></div>
  <button class="p" data-save="ads">Save</button>
 </div>
 
-<div class="card"><h3>🖥 IPTV server</h3>
- <div class="mu">Leave empty to use the server built into the app. Changes apply when users reopen the app.</div>
- <div class="f"><label>Server URL</label><input id="s_host" placeholder="http://server.com:8080"></div>
- <div class="row"><div class="f" style="flex:1"><label>Username</label><input id="s_user"></div><div class="f" style="flex:1"><label>Password</label><input id="s_pass"></div></div>
- <button class="p" data-save="server">Save</button>
+<div class="card"><h3>🖥 IPTV accounts (Xtream)</h3>
+ <div class="mu">Add as many accounts as you want. Users are shared between the accounts that are ON, and if one stops working the app switches to the next one automatically. Leave the list empty to use the account built into the app. Changes apply when users reopen the app.</div>
+ <div id="srvs"></div>
+ <div class="row" style="margin-top:10px"><button id="s_add">+ Add account</button><button class="p" data-save="servers">Save accounts</button></div>
 </div>
 
 <div class="card"><h3>👥 Users (devices)</h3>
@@ -140,8 +152,9 @@ async function loadCfg(){
  const m=cfg.maintenance||{},u=cfg.update||{},a=cfg.ads||{},sv=cfg.server||{},n=cfg.notice||{};
  $('#m_on').checked=!!m.on;$('#m_msg').value=m.msg||'';
  $('#u_ver').value=u.latest||'';$('#u_url').value=u.url||'';$('#u_msg').value=u.msg||'';$('#u_force').checked=!!u.force;
- $('#a_on').checked=a.enabled!==false;$('#a_every').value=a.every||'';$('#a_secs').value=a.secs||'';$('#a_link').value=a.directLink||'';
- $('#s_host').value=sv.host||'';$('#s_user').value=sv.user||'';$('#s_pass').value=sv.pass||'';
+ $('#a_on').checked=a.enabled!==false;$('#a_every').value=a.every||'';$('#a_secs').value=a.secs||'';$('#a_link').value=a.directLink||'';$('#a_oon').checked=a.openOn!==false;$('#a_osec').value=a.openSecs||'';$('#a_ogap').value=a.openGap??'';$('#a_gon').checked=a.gridOn!==false;$('#a_gev').value=a.gridEvery||'';$('#a_glink').value=a.gridLink||'';$('#a_gmode').value=a.gridMode||'mix';$('#a_pon').checked=a.pauseOn!==false;$('#a_don').checked=a.detailOn!==false;
+ let list=Array.isArray(cfg.servers)?cfg.servers:[];if(!list.length&&sv.host)list=[{host:sv.host,user:sv.user,pass:sv.pass,on:true}];
+ renderSrv(list);
  $('#n_cur').textContent=n.on&&n.text?'Active notice: '+n.text:'No active notice'}
 async function loadBlocked(){try{const s=await getDocs(BL);blocked=new Set(s.docs.map(d=>d.id))}catch(e){}$('#c_bl').textContent=blocked.size}
 async function cnt(q){try{return(await getCountFromServer(q)).data().count}catch(e){return'?'}}
@@ -185,14 +198,26 @@ $('#qb').onclick=search;$('#q').onkeydown=e=>{if(e.key=='Enter')search()};
 $('#rf').onclick=()=>{loadAll();toast('Refreshed')};
 setInterval(()=>{if(auth.currentUser&&document.visibilityState=='visible')loadStats()},60e3);
 
+/* IPTV accounts list */
+function srvRow(x,i){return `<div class="sv"><div class="hd"><b>Account ${i+1}</b><label class="row" style="gap:6px"><input type="checkbox" class="s_on" ${x.on!==false?'checked':''}>ON</label><button class="s_del">✕</button></div>
+ <div class="f"><label>Server URL</label><input class="s_h" placeholder="http://server.com:8080" value="${esc(x.host||'')}"></div>
+ <div class="row"><div class="f" style="flex:1"><label>Username</label><input class="s_u" value="${esc(x.user||'')}"></div><div class="f" style="flex:1"><label>Password</label><input class="s_p" value="${esc(x.pass||'')}"></div></div></div>`}
+function renderSrv(L){$('#srvs').innerHTML=L.length?L.map(srvRow).join(''):'<div class="mu" style="margin-top:8px">No accounts added — the app uses its built-in account.</div>'}
+function readSrv(){return[...document.querySelectorAll('#srvs .sv')].map(d=>({host:d.querySelector('.s_h').value.trim().replace(/\/+$/,''),user:d.querySelector('.s_u').value.trim(),pass:d.querySelector('.s_p').value.trim(),on:d.querySelector('.s_on').checked}))}
+$('#s_add').onclick=()=>{const L=readSrv();L.push({host:'',user:'',pass:'',on:true});renderSrv(L)};
+$('#srvs').onclick=e=>{if(e.target.classList.contains('s_del')){const L=readSrv(),i=[...document.querySelectorAll('#srvs .sv')].indexOf(e.target.closest('.sv'));L.splice(i,1);renderSrv(L)}};
+
 /* actions */
 async function save(part,val,msg){try{await setDoc(CFG,{[part]:val},{merge:true});toast(msg||'Saved ✓');await loadCfg()}catch(e){toast('Error: '+(e.code||e.message))}}
 document.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{
  const p=b.dataset.save;
  if(p=='maintenance')save(p,{on:$('#m_on').checked,msg:$('#m_msg').value.trim()});
  if(p=='update'){const v=$('#u_ver').value.trim();if(v&&!/^\d+(\.\d+)*$/.test(v))return toast('Version must look like 1.1');save(p,{latest:v,url:$('#u_url').value.trim(),msg:$('#u_msg').value.trim(),force:$('#u_force').checked})}
- if(p=='ads')save(p,{enabled:$('#a_on').checked,every:Math.max(1,+$('#a_every').value||15),secs:Math.max(3,+$('#a_secs').value||10),directLink:$('#a_link').value.trim()});
- if(p=='server')save(p,{host:$('#s_host').value.trim(),user:$('#s_user').value.trim(),pass:$('#s_pass').value.trim()})});
+ if(p=='ads')save(p,{enabled:$('#a_on').checked,every:Math.max(1,+$('#a_every').value||15),secs:Math.max(3,+$('#a_secs').value||10),directLink:$('#a_link').value.trim(),
+  openOn:$('#a_oon').checked,openSecs:Math.max(2,+$('#a_osec').value||5),openGap:$('#a_ogap').value===''?10:Math.max(0,+$('#a_ogap').value),gridOn:$('#a_gon').checked,gridEvery:Math.max(4,+$('#a_gev').value||9),gridLink:$('#a_glink').value.trim(),gridMode:$('#a_gmode').value,pauseOn:$('#a_pon').checked,detailOn:$('#a_don').checked});
+ if(p=='servers'){const L=readSrv();if(L.some(x=>!x.host||!x.user||!x.pass))return toast('Fill server, username and password for every account (or remove it)');
+  if(L.some(x=>!/^https?:\/\//i.test(x.host)))return toast('Server must start with http:// or https://');
+  setDoc(CFG,{servers:L,server:{host:'',user:'',pass:''}},{merge:true}).then(()=>{toast('Accounts saved ✓');loadCfg()}).catch(e=>toast('Error: '+(e.code||e.message)))}});
 $('#n_send').onclick=()=>{const t=$('#n_txt').value.trim();if(!t)return toast('Write a message first');save('notice',{on:true,text:t,id:String(Date.now())},'Notice sent ✓').then(()=>$('#n_txt').value='')};
 $('#n_off').onclick=()=>save('notice',{on:false,text:'',id:''},'Notice removed');
 $('#list').onclick=async e=>{
